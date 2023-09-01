@@ -1,9 +1,13 @@
 package main
 
 import (
+	"github.com/takkiiiiiiiii/chat/qkd"
 	"github.com/gorilla/websocket"
 	"time"
+	// "fmt"
 )
+
+// var segment qkd.Segment
 
 type client struct {
 	//socketはwebクライアントのためのWebsocket  //WebSocketとは、WebサーバとWebブラウザの間で双方向通信できるようにする技術
@@ -14,6 +18,8 @@ type client struct {
 	room *room
 	//userdata  ユーザーに関するデータを保持
 	userData map[string]interface{}
+	// 量子鍵配送用の鍵
+	secretKey string
 }
 
 //WriteMessage and ReadMessage methods to send and receive messages as a slice of bytes
@@ -35,6 +41,7 @@ func (c *client) read() {
 
 func (c *client) write() {
 	for msg := range c.send {
+		qkd.Qkd(msg.Message)
 		if err := c.socket.WriteJSON(msg); err != nil {
 			break
 		}

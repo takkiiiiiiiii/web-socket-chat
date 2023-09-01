@@ -52,7 +52,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Location", loginUrl)
 		w.WriteHeader(http.StatusTemporaryRedirect)
 	case "callback":
-		provider, err := gomniauth.Provider(provider) //
+		provider, err := gomniauth.Provider(provider)
 		if err != nil {
 			log.Fatalln("認証プロバイダーの取得に失敗しました", provider, "-", err)
 		}

@@ -41,7 +41,7 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	http.HandleFunc("/upload", uploaderHandler)
-	var addr = flag.String("addr", "8080", "アプリケーションのアドレス") //flag.String(flagname, default value, usage string) 戻り値 *sting
+	var addr = flag.String("addr", "8080", "アプリケーションのアドレス") //flag.String(flagname, default value, usage string) 戻り値 *string
 	flag.Parse()
 	//Gomniauthのセットアップ
 	gomniauth.SetSecurityKey("セキュリティーキー")
@@ -72,9 +72,9 @@ func main() {
 		w.Header()["Location"] = []string{"/chat"}
 		w.WriteHeader(http.StatusTemporaryRedirect)
 	})
-	mux := http.NewServeMux()
-	mux.Handle("/upload", &templateHandler{filename: "upload.html"})
-	http.HandleFunc("/uploader", uploaderHandler)
+	// mux := http.NewServeMux()
+	// mux.Handle("/upload", &templateHandler{filename: "upload.html"})
+	// http.HandleFunc("/uploader", uploaderHandler)
 	//webサーバー起動
 	log.Println("webサーバー開始 port : ", *addr) //*addr 間接演算子
 	if err := http.ListenAndServe(":8080", nil); err != nil {

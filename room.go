@@ -1,19 +1,21 @@
 package main
 
 import (
-	"chat/trace"
+	"github.com/takkiiiiiiiii/chat/trace"
 	"github.com/gorilla/websocket"
 	"github.com/stretchr/objx"
 	"log"
 	"net/http"
 )
 
+
+// チャネルはバッファとして使える
 type room struct {
 	//forwardは他のクライアントに転送するためのメッセージを保持するためのチャネル
 	forward chan *message
-	//joinはチャットルームに参加しようとしているクライアントのためのチャネル
+	//joinはチャットルームに参加しようとしているクライアントのためのチャネル (そのクライアントを保持)
 	join chan *client
-	//leaveはチャットルームから退室しようとしているクライアントのためのチャネル
+	//leaveはチャットルームから退室しようとしているクライアントのためのチャネル (そのクライアントを保持)
 	leave chan *client
 	//clientsに在室しているすべてのクライアントが保持されている
 	clients map[*client]bool
@@ -58,9 +60,9 @@ func (r *room) run() {
 func newRoom(avatar Avatar) *room {
 	return &room{
 		forward: make(chan *message),
-		join:    make(chan *client),
+		join:    make(chan *client, 2),
 		leave:   make(chan *client),
-		clients: make(map[*client]bool),
+		clients: make(map[*client]bool, 2),
 		tracer:  trace.Off(), //niltrace構造体とともに定義   trace.Off() 戻り値 *niltrace  newRoom生成したら　traceパッケージのOffメソッドも実行される
 		avatar:  avatar,
 	}

@@ -63,7 +63,7 @@ func newRoom(avatar Avatar) *room {
 		join:    make(chan *client, 2),
 		leave:   make(chan *client),
 		clients: make(map[*client]bool, 2),
-		tracer:  trace.Off(), //niltrace構造体とともに定義   trace.Off() 戻り値 *niltrace  newRoom生成したら　traceパッケージのOffメソッドも実行される
+		tracer:  trace.Off(), // trace構造体とともに定義   trace.Off() 戻り値 *niltrace  newRoom生成したら　traceパッケージのOffメソッドも実行される
 		avatar:  avatar,
 	}
 }
@@ -76,7 +76,7 @@ const (
 var upgrader = &websocket.Upgrader{ReadBufferSize: socketBufferSize, WriteBufferSize: socketBufferSize}
 
 func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	socket, err := upgrader.Upgrade(w, req, nil) //UpgraderのUpgradeはHTTP通信からWebSocket通信に更新してくれる
+	socket, err := upgrader.Upgrade(w, req, nil) // UpgraderのUpgradeはHTTP通信からWebSocket通信に更新してくれる
 	if err != nil {
 		log.Fatal("ServeHttp:", err)
 		return
@@ -90,10 +90,11 @@ func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		socket:   socket,
 		send:     make(chan *message, messageBufferSize),
 		room:     r,
-		userData: objx.MustFromBase64(authCookie.Value), //MustFromBase64の戻り値 map[string]interface{}  エンコードされたクッキーの値をマップのオブジェクトへ復元
+		userData: objx.MustFromBase64(authCookie.Value), // MustFromBase64の戻り値 map[string]interface{}  エンコードされたクッキーの値をマップのオブジェクトへ復元
+		// ここで鍵を共有する
 	}
 
-	r.join <- client //チャネルへ値を 送信
+	r.join <- client // クライアント参加
 	defer func() { r.leave <- client }()
 	go client.write()
 	client.read()

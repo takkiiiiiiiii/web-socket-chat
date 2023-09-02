@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/takkiiiiiiiii/chat/qkd"
+	// "github.com/takkiiiiiiiii/chat/qkd"
 	"github.com/gorilla/websocket"
 	"time"
+	// "log"
 	// "fmt"
 )
 
@@ -19,7 +20,7 @@ type client struct {
 	//userdata  ユーザーに関するデータを保持
 	userData map[string]interface{}
 	// 量子鍵配送用の鍵
-	secretKey string
+	shareKey string
 }
 
 //WriteMessage and ReadMessage methods to send and receive messages as a slice of bytes
@@ -41,7 +42,7 @@ func (c *client) read() {
 
 func (c *client) write() {
 	for msg := range c.send {
-		qkd.Qkd(msg.Message)
+		// qkd.Qkd(msg.Message)
 		if err := c.socket.WriteJSON(msg); err != nil {
 			break
 		}

@@ -10,11 +10,11 @@ import (
 
 var ket_0 = [2]float64{1, 0}
 
-var q Qubit
 var quantumDevice QuantumDevice
 
 
 func init() {
+	var q Qubit
 	q.state = ket_0
 	quantumDevice.available_qubits = append(quantumDevice.available_qubits, q)
 }
@@ -61,7 +61,7 @@ func randomFloat() float64 {
 	return float64(binary.LittleEndian.Uint64(buf[:])) / (1 << 64)
 }
 
-func (qd *QuantumDevice) allocate_qubit() (Qubit, error) {
+func (qd *QuantumDevice) Allocate_qubit() (Qubit, error) {
 	if len(quantumDevice.available_qubits) != 0 {
 		q := quantumDevice.available_qubits[len(quantumDevice.available_qubits)-1]
 		q.state = ket_0
@@ -71,16 +71,16 @@ func (qd *QuantumDevice) allocate_qubit() (Qubit, error) {
 	return Qubit{}, errors.New("No available qubits")
 }
 
-func (qd *QuantumDevice) deallocate_qubit(q Qubit) {
+func (qd *QuantumDevice) Deallocate_qubit(q Qubit) {
 	qd.available_qubits = append(qd.available_qubits, q)
 }
 
-func (qd *QuantumDevice) using_qubit() Qubit {
-	q, err := qd.allocate_qubit()
+func (qd *QuantumDevice) Using_qubit() (Qubit, error) {
+	q, err := qd.Allocate_qubit()
 	if err != nil {
-		errors.New("No available qubits")
+		return q, errors.New("No available qubits")
 	}
 	defer q.Reset()
-	defer qd.deallocate_qubit(q)
-	return q
+	defer qd.Deallocate_qubit(q)
+	return q, nil
 }

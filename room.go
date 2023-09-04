@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/takkiiiiiiiii/chat/qkd"
 	"github.com/takkiiiiiiiii/chat/trace"
 	"github.com/gorilla/websocket"
 	"github.com/stretchr/objx"
@@ -95,7 +94,8 @@ func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		userData: objx.MustFromBase64(authCookie.Value), // MustFromBase64の戻り値 map[string]interface{}  エンコードされたクッキーの値をマップのオブジェクトへ復元	
 	}
 
-	client.shareKey = qkd.SimulateBB84(2048) // 共有鍵
+	key := client.SimulateBB84(2048)
+    r.shareKey(client, key)
 
 	r.join <- client
 	defer func() { r.leave <- client }()

@@ -14,39 +14,6 @@ type Segment struct {
     padded_message_bit  []int
 }
 
-func Qkd(message string) {
-	fmt.Println("Generating a 96-bit key by simulating BB84...")
-	key := SimulateBB84(2048)
-	hex_key := GenerateHex(key)
-	fmt.Println("Got key :                             "+ hex_key + "\n")
-
-	var padded_message_bit []int
-	
-	message_bit := Generate_message_bit(message)
-	if len(message_bit) < len(key) {
-		padded_message_bit = Generate_padded_message_bit(message_bit, len(key))	
-	}
-	seg := Segment{
-        message : message,
-        message_bit : message_bit,
-		padded_message_bit : padded_message_bit,
-    }
-
-	hex_message := GenerateHex(seg.padded_message_bit)
-	fmt.Println("Using key to send secret message:     "+ hex_message + "\n")
-
-
-	encrypted_message := ApplyOneTimePad(seg.padded_message_bit, key)
-	hex_encrypted_message := GenerateHex(encrypted_message)
-	fmt.Println("Encrypted message :                   "+ hex_encrypted_message + "\n")
-
-	decrypted_message_bit := ApplyOneTimePad(encrypted_message, key)
-	padded_len := len(seg.padded_message_bit) - len(seg.message_bit)
-	
-	decrypted_message := Decryption_message_bit(decrypted_message_bit[padded_len:])
-	fmt.Println("received message :      "+ decrypted_message + "\n")
-}
-
 
 func Generate_message_bit(message string) []int{
 	var message_bit []int

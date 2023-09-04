@@ -2,7 +2,7 @@ package qkd
 
 import (
 	"log"
-	"fmt"
+	// "fmt"
 	"strconv"
 	"strings"
 )
@@ -119,31 +119,31 @@ func ChooseBasisBobside(q Qubit) [2]int {
 }
 
 
-func SimulateBB84(n_bit int) []int {
+// func SimulateBB84(n_bit int) []int {
 
-	var key []int
-	round := 0
-	for {
-		if len(key) >= n_bit {
-			break
-		}
-		round += 1
+// 	var key []int
+// 	round := 0
+// 	for {
+// 		if len(key) >= n_bit {
+// 			break
+// 		}
+// 		round += 1
 
-		sender_info, sender_qubit, err := CreateSingleBitWithBB84()
-		if err != nil {
-			log.Println(err)
-		}
-		receiver_info := ChooseBasisBobside(sender_qubit)
-		if sender_info[1] == receiver_info[0] {
-			if sender_info[0] == receiver_info[1] {
-				key = append(key, sender_info[0])
-			}
-		}
-	}
-	fmt.Printf("Took %d rounds to generate a %d-bit key.\n", round, n_bit)
+// 		sender_info, sender_qubit, err := CreateSingleBitWithBB84()
+// 		if err != nil {
+// 			log.Println(err)
+// 		}
+// 		receiver_info := ChooseBasisBobside(sender_qubit)
+// 		if sender_info[1] == receiver_info[0] {
+// 			if sender_info[0] == receiver_info[1] {
+// 				key = append(key, sender_info[0])
+// 			}
+// 		}
+// 	}
+// 	fmt.Printf("Took %d rounds to generate a %d-bit key.\n", round, n_bit)
 
-	return key
-}
+// 	return key
+// }
 
 func ApplyOneTimePad(message []int, key []int) []int {
 	encrypted_message := make([]int, len(message))

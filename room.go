@@ -19,10 +19,12 @@ type room struct {
 	leave chan *client
 	//clientsに在室しているすべてのクライアントが保持されている
 	clients map[*client]bool
+ 	// クライアント間の通信を管理するためのチャネルをここに追加
+	clientChannels map[*client]chan *message
+
 	//tracerはチャットルーム上で行われた操作のログを受け取ります
 	tracer trace.Tracer //traceパッケージのTrace型(interface)
 	avatar Avatar       //アバター情報の取得
-
 }
 
 func (r *room) run() {
@@ -94,8 +96,7 @@ func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		userData: objx.MustFromBase64(authCookie.Value), // MustFromBase64の戻り値 map[string]interface{}  エンコードされたクッキーの値をマップのオブジェクトへ復元	
 	}
 
-	key := client.SimulateBB84(2048)
-    r.shareKey(client, key)
+	client.SimulateBB84(2048)
 
 	r.join <- client
 	defer func() { r.leave <- client }()
@@ -104,11 +105,11 @@ func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 }
 
 
-func (r *room) shareKey(sender *client, key []int) {
-    for client := range r.clients {
-        if client != sender {
-            // ここで鍵を送信
-            client.classicalChannel <- key
-        }
-    }
-}
+// func (r *room) shareKey(sender *client, key []int) {
+//     for client := range r.clients {
+//         if client != sender {
+//             // ここで鍵を送信
+//             client.classicalChannel <- key
+//         }
+//     }
+// }

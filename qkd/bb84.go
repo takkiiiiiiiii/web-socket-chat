@@ -91,6 +91,7 @@ func SendSingleBitWithBB84(alice_device QuantumDevice, bob_device QuantumDevice)
 	return info
 }
 
+// for sender
 func CreateSingleBitWithBB84() ([2]int, Qubit, error) {
 	var sender_info [2]int
 	var sender_device QuantumDevice
@@ -108,6 +109,8 @@ func CreateSingleBitWithBB84() ([2]int, Qubit, error) {
 	return sender_info, q, err
 }
 
+
+// for receiver
 func ChooseBasisBobside(q Qubit) [2]int {
 	var receiver_device QuantumDevice
 	var receiver_info [2]int
@@ -117,33 +120,6 @@ func ChooseBasisBobside(q Qubit) [2]int {
 	receiver_info[1] = receiver_result
 	return receiver_info
 }
-
-
-// func SimulateBB84(n_bit int) []int {
-
-// 	var key []int
-// 	round := 0
-// 	for {
-// 		if len(key) >= n_bit {
-// 			break
-// 		}
-// 		round += 1
-
-// 		sender_info, sender_qubit, err := CreateSingleBitWithBB84()
-// 		if err != nil {
-// 			log.Println(err)
-// 		}
-// 		receiver_info := ChooseBasisBobside(sender_qubit)
-// 		if sender_info[1] == receiver_info[0] {
-// 			if sender_info[0] == receiver_info[1] {
-// 				key = append(key, sender_info[0])
-// 			}
-// 		}
-// 	}
-// 	fmt.Printf("Took %d rounds to generate a %d-bit key.\n", round, n_bit)
-
-// 	return key
-// }
 
 func ApplyOneTimePad(message []int, key []int) []int {
 	encrypted_message := make([]int, len(message))

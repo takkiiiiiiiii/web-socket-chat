@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/takkiiiiiiiii/chat/qkd"
 	"github.com/takkiiiiiiiii/chat/trace"
 	"github.com/gorilla/websocket"
 	"github.com/stretchr/objx"
@@ -86,16 +87,28 @@ func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		log.Fatal("クッキーの取得に失敗しました: ", err)
 		return
 	}
+
 	client := &client{
 		socket:   socket,
 		send:     make(chan *message, messageBufferSize),
 		room:     r,
-		userData: objx.MustFromBase64(authCookie.Value), // MustFromBase64の戻り値 map[string]interface{}  エンコードされたクッキーの値をマップのオブジェクトへ復元
-		// ここで鍵を共有する
+		userData: objx.MustFromBase64(authCookie.Value), // MustFromBase64の戻り値 map[string]interface{}  エンコードされたクッキーの値をマップのオブジェクトへ復元	
 	}
 
-	r.join <- client // クライアント参加
+	client.shareKey = qkd.SimulateBB84(2048) // 共有鍵
+
+	r.join <- client
 	defer func() { r.leave <- client }()
-	go client.write()
-	client.read()
+	go client.write() // 他のクライアントにメッセージを送信
+	client.read() // クライアントからのメッセージを待機
+}
+
+
+func (r *room) shareKey(sender *client, key []int) {
+    for client := range r.clients {
+        if client != sender {
+            // ここで鍵を送信
+            client.classicalChannel <- key
+        }
+    }
 }

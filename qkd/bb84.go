@@ -12,7 +12,7 @@ func SampleRamdomBit(device QuantumDevice) int {
 	if err != nil {
 		log.Println(err)
 	}
-	q.Hadamard(q.state)
+	q.Hadamard(q.State)
 	result := q.Measure()
 	q.Reset()
 	return result
@@ -20,16 +20,16 @@ func SampleRamdomBit(device QuantumDevice) int {
 
 func PrepareMessageQubit(message int, basis int, q Qubit) {
 	if message == 1 {
-		q.Hadamard(q.state)
+		q.Hadamard(q.State)
 	}
 	if basis == 1 {
-		q.X(q.state)
+		q.X(q.State)
 	}
 }
 
 func MeasureMessageQubit(basis int, q Qubit) int {
 	if basis == 1 {
-		q.Hadamard(q.state)
+		q.Hadamard(q.State)
 	}
 	result := q.Measure()
 	q.Reset()
@@ -91,25 +91,24 @@ func SendSingleBitWithBB84(alice_device QuantumDevice, bob_device QuantumDevice)
 	return info
 }
 
-func createSingleBitWithBB84() ([2]int, Qubit, error) {
-	var result [2]int
-	var my_device QuantumDevice
-	my_message := SampleRamdomBit(my_device)
-	my_basis := SampleRamdomBit(my_device)
-	result[0] = my_message
-	result[1] = my_basis
+func CreateSingleBitWithBB84() ([2]int, Qubit, error) {
+	var sender_info [2]int
+	var sender_device QuantumDevice
+	sender_message := SampleRamdomBit(sender_device)
+	sender_basis := SampleRamdomBit(sender_device)
+	sender_info[0] = sender_message
+	sender_info[1] = sender_basis
 
-	q, err := my_device.Using_qubit()
+	q, err := sender_device.Using_qubit()
 	if err != nil {
 		log.Println(err)
 	}
-	PrepareMessageQubit(my_message, my_basis, q)
+	PrepareMessageQubit(sender_message, sender_basis, q)
 
-
-	return result, q, err
+	return sender_info, q, err
 }
 
-func chooseBasisBobside(q Qubit) [2]int {
+func ChooseBasisBobside(q Qubit) [2]int {
 	var receiver_device QuantumDevice
 	var receiver_info [2]int
 	receiver_basis := SampleRamdomBit(receiver_device)
@@ -121,8 +120,6 @@ func chooseBasisBobside(q Qubit) [2]int {
 
 
 func SimulateBB84(n_bit int) []int {
-	var alice_device QuantumDevice
-	var bob_device QuantumDevice
 
 	var key []int
 	round := 0
@@ -131,15 +128,15 @@ func SimulateBB84(n_bit int) []int {
 			break
 		}
 		round += 1
-		result := SendSingleBitWithBB84(alice_device, bob_device)
-		alice_message := result[0]
-		alice_basis := result[1]
-		bob_basis := result[2]
-		bob_result := result[3]
 
-		if alice_basis == bob_basis {
-			if alice_message == bob_result {
-				key = append(key, alice_message)
+		sender_info, sender_qubit, err := CreateSingleBitWithBB84()
+		if err != nil {
+			log.Println(err)
+		}
+		receiver_info := ChooseBasisBobside(sender_qubit)
+		if sender_info[1] == receiver_info[0] {
+			if sender_info[0] == receiver_info[1] {
+				key = append(key, sender_info[0])
 			}
 		}
 	}

@@ -12,7 +12,8 @@ type SimulatedQubit interface {
 }
 
 type Qubit struct {
-	state [2]float64
+	Name 	string // ユーザー名
+	State 	[2]float64
 }
 
 type SingleQubitSimulator interface {

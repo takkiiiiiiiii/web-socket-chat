@@ -45,8 +45,8 @@
                 if(!window["WebSocket"]) {
                     alert("エラー: WebSocketに対応していないブラウザ");
                 } else {
-                    //socket = new WebSocket("ws://localhost:8080/room"); 
-                    socket = new WebSocket("ws://{{.Host}}/room") //WebSocket接続開始 で囲まれた部分はアノテーション(注釈)を表す アノテーションをr.Host(rはExecuteに渡された引数)の値で置き換える
+                    socket = new WebSocket("ws://localhost:8080/room"); 
+                    // socket = new WebSocket("ws://{{.Host}}/room") //WebSocket接続開始 で囲まれた部分はアノテーション(注釈)を表す アノテーションをr.Host(rはExecuteに渡された引数)の値で置き換える
                     //二つのハンドラoncliseとonmessage
                     socket.onclose = function() {
                         alert("接続終了");

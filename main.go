@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"github.com/stretchr/gomniauth"
-	"github.com/stretchr/gomniauth/providers/facebook"
-	"github.com/stretchr/gomniauth/providers/github"
+	// "github.com/stretchr/gomniauth/providers/facebook"
+	// "github.com/stretchr/gomniauth/providers/github"
 	"github.com/stretchr/gomniauth/providers/google"
 	"github.com/stretchr/objx"
 	"log"

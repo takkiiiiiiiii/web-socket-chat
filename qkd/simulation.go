@@ -2,6 +2,7 @@ package qkd
 
 import (
 	"crypto/rand"
+	"fmt"
 	"encoding/binary"
 	"errors"
 	"log"
@@ -35,12 +36,13 @@ func (q *Qubit) Hadamard(state [2]float64) {
 }
 
 func (q *Qubit) X(state [2]float64) {
-	q.state[0] = q.state[0]*H[0][0] + q.state[1]*H[1][0]
-	q.state[1] = q.state[0]*H[0][1] + q.state[1]*H[1][1]
+	q.state[0] = q.state[0]*X[0][0] + q.state[1]*X[1][0]
+	q.state[1] = q.state[0]*X[0][1] + q.state[1]*X[1][1]
 }
 
 func (q *Qubit) Measure() int {
 	pr0 := math.Pow(math.Abs(q.state[0]), 2)
+	fmt.Println(pr0)
 	num := randomFloat()
 	if pr0 >= num {
 		return 0

@@ -8,14 +8,6 @@ import (
 	"strings"
 )
 
-type Segment struct {
-    message string
-    message_bit []int
-    padded_message_bit  []int
-}
-
-
-
 
 func Generate_message_bit(message string) []int{
 	var message_bit []int

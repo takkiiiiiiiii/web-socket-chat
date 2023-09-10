@@ -2,7 +2,7 @@ package qkd
 
 import (
 	"crypto/rand"
-	"fmt"
+	// "fmt"
 	"encoding/binary"
 	"errors"
 	"log"
@@ -11,23 +11,21 @@ import (
 
 var ket_0 = [2]float64{1, 0}
 
-var q Qubit
 var quantumDevice QuantumDevice
 
 
 func init() {
-	q.state = ket_0
-	quantumDevice.available_qubits = append(quantumDevice.available_qubits, q)
+	q := NewQubit()
+	quantumDevice.available_qubits = append(quantumDevice.available_qubits, *q)
 }
 
 var H = [][]float64{{1 / math.Sqrt(2), 1 / math.Sqrt(2)},
 	{1 / math.Sqrt(2), -1 / math.Sqrt(2)}}
 
-var X = [][]float64{{0 / math.Sqrt(2), 1 / math.Sqrt(2)},
-	{1 / math.Sqrt(2), 0 / math.Sqrt(2)}}
+var X = [][]float64{{0, 1}, {1, 0}} 
 
 func NewQubit() *Qubit {
-	return &Qubit{}
+	return &Qubit{ state : ket_0}
 }
 
 func (q *Qubit) Hadamard(state [2]float64) {
@@ -42,7 +40,6 @@ func (q *Qubit) X(state [2]float64) {
 
 func (q *Qubit) Measure() int {
 	pr0 := math.Pow(math.Abs(q.state[0]), 2)
-	fmt.Println(pr0)
 	num := randomFloat()
 	if pr0 >= num {
 		return 0

@@ -1,13 +1,12 @@
 package qkd
 
 import (
-	// "fmt"
 	"strconv"
 	"strings"
 )
 
 func SampleRamdomBit(device QuantumDevice) int {
-	q = device.using_qubit()
+	q := device.using_qubit()
 	q.Hadamard(q.state)
 	result := q.Measure()
 	q.Reset()
@@ -65,18 +64,17 @@ func GenerateHex(bits []int) string {
 // BB84 protocol for sending a classical bit
 func SendSingleBitWithBB84(alice_device QuantumDevice, bob_device QuantumDevice) [4]int {
 	var info [4]int
-	alice_message := SampleRamdomBit(alice_device)
+	alice_bit := SampleRamdomBit(alice_device)
 	alice_basis := SampleRamdomBit(alice_device)
-	info[0] = alice_message
+	info[0] = alice_bit
 	info[1] = alice_basis
+
+	q := alice_device.using_qubit()
+	PrepareMessageQubit(alice_bit, alice_basis, q)
 
 	bob_basis := SampleRamdomBit(bob_device)
 	info[2] = bob_basis
 
-	q := alice_device.using_qubit()
-	PrepareMessageQubit(alice_message, alice_basis, q)
-
-	// Qubit sending
 
 	bob_result := MeasureMessageQubit(bob_basis, q)
 	info[3] = bob_result

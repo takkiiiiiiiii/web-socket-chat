@@ -38,7 +38,7 @@ func (r *room) run() {
 			r.clients = append(r.clients, client)
 			fmt.Println("新しいクライアントが参加しました")
 			if len(r.clients) == 2 {
-				key := client.SimulateBB84(96)
+				key := client.SimulateBB84(2048)
 				for _, c := range r.clients {
 					c.shareKey = key
 				}

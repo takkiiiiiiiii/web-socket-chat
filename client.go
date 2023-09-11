@@ -35,7 +35,7 @@ func (c *client) read() {
 		var msg *message
 		var padded_message_bit []int
 		if err := c.socket.ReadJSON(&msg); err == nil { // ReadJSON func(v interface{}) error   message.goのmessage型をデコード
-			msg.When = time.Now()
+			msg.When = time.Now().Format(time.DateTime)
 			msg.Name = c.userData["name"].(string)
 			msg.AvatarURL, _ = c.room.avatar.GetAvatarURL(c)
 			message_bit := generate_message_bit(msg.Message)

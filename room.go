@@ -1,6 +1,7 @@
 package main
 
 import (
+	"time"
 	"fmt"
 	"github.com/takkiiiiiiiii/chat/trace"
 	"github.com/gorilla/websocket"
@@ -38,10 +39,24 @@ func (r *room) run() {
 			r.clients = append(r.clients, client)
 			fmt.Println("新しいクライアントが参加しました")
 			if len(r.clients) == 2 {
-				key := client.SimulateBB84(2048)
+				key := client.SimulateBB84(96)
 				for _, c := range r.clients {
 					c.shareKey = key
 				}
+			}
+			if len(r.clients) == 2 {
+				go func() {
+					for {
+						time.Sleep(60 * time.Second)
+						if len(r.clients) == 2 {
+							key := client.SimulateBB84(96)
+							for _, c := range r.clients {
+								c.shareKey = key
+							}
+						}
+						fmt.Println("refresh the key")
+					}
+				}()
 			}
 			r.tracer.Trace("新しいクライアントが参加しました")
 		case client := <-r.leave:

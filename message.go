@@ -1,8 +1,6 @@
 package main
 
 import (
-	"github.com/takkiiiiiiiii/chat/qkd"
-	"time"
 	"fmt"
 	"strconv"
 	"log"
@@ -14,20 +12,12 @@ import (
 type message struct {
 	Name      string    //ユーザー名
 	Message   string    //contents
-	When      time.Time //送信された時刻
-	QuantumInfo QuantumInfo
+	When      string //送信された時刻
 	AvatarURL string
 	MessageBit []int
 	PaddedMessageBit []int
 	EncryptedMessage []int
 }
-
-
-type QuantumInfo struct {
-	Qubit *qkd.Qubit
-	Basis int
-}
-
 
 func generate_message_bit(message string) []int{
 	var message_bit []int

@@ -61,7 +61,8 @@
                                 }).attr("src", msg.AvatarURL),
                                 $("<strong>").text(msg.Name + ": "),
                                 $("<span>").text(msg.Message)
-                            )
+                            ),
+                            $("<strong>").text(msg.When)
                         );
                     }
                 }

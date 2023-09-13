@@ -48,11 +48,9 @@ func (r *room) run() {
 				go func() {
 					for {
 						time.Sleep(60 * time.Second)
-						if len(r.clients) == 2 {
-							key := client.SimulateBB84(96)
-							for _, c := range r.clients {
-								c.shareKey = key
-							}
+						key := client.SimulateBB84(96)
+						for _, c := range r.clients {
+							c.shareKey = key
 						}
 						fmt.Println("refresh the key")
 					}

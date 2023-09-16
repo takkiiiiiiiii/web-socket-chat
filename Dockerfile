@@ -2,22 +2,6 @@ FROM ubuntu:22.04
 
 ENV GO_VERSION 1.21.0
 
-
-# RUN set -eux; \
-#    apt-get update; \
-#    apt-get install -y -no-install-recommends \
-#        g++ \
-#        gcc \
-#        make \
-#        pkg-config \
-#        sudo \
-#        vim \
-#        curl \
-#        wget \
-#        lv \
-#        apt-get -y clean; \ 
-#        rm -rf /var/lib/apt/lists/*
-
 RUN set -eux; \
        apt-get update; \
        apt-get install -y --no-install-recommends \
@@ -29,9 +13,12 @@ RUN set -eux; \
                ca-certificates \
                wget \
                curl \
-               vim \
-       ; \
-       rm -rf /var/lib/apt/lists/*
+               vim
+
+
+RUN apt-get install -y git 
+
+RUN rm -rf /var/lib/apt/lists/* 
 
 RUN cd /opt/; \
        curl -OL https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz && \
@@ -42,7 +29,7 @@ RUN cd /opt/; \
  
 ENV PATH /usr/local/go/bin:$PATH
 
-CMD ["go", "run", "main.go"]
+CMD ["go", "run", "./chat/web-socket-chat/main.go"]
 
 WORKDIR / 
 

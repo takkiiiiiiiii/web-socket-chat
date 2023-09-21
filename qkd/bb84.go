@@ -1,8 +1,12 @@
 package qkd
 
 import (
+	// "log"
 	"strconv"
 	"strings"
+	"fmt"
+	// "crypto/rand"
+	// "math/big"
 )
 
 func SampleRamdomBit(device QuantumDevice) int {
@@ -82,38 +86,81 @@ func SendSingleBitWithBB84(alice_device QuantumDevice, bob_device QuantumDevice)
 	return info
 }
 
-// func simulateBB84(n_bit int) []int {
-// 	var alice_device QuantumDevice
-// 	var bob_device QuantumDevice
+func ApplyOneTimePad(message []int, key []int, index int, env int) ([]int, int64) {
+	if env == 1 {
+		encrypted_message := make([]int, len(message), len(message))
+		fmt.Println(len(message))
+		if len(message) > len(key) {
+			message_index := 0
+			var n int64
+			rest_message := len(message)
+			key_index := 0
+			count := len(message) / len(key)
+			for i := 0; i < count+1; i++ {
 
-// 	var key []int
-// 	round := 0
-// 	for {
-// 		if len(key) >= n_bit {
-// 			break
-// 		}
-// 		round += 1
-// 		result := sendSingleBitWithBB84(alice_device, bob_device)
-// 		alice_message := result[0]
-// 		alice_basis := result[1]
-// 		bob_basis := result[2]
-// 		bob_result := result[3]
-
-// 		if alice_basis == bob_basis {
-// 			if alice_message == bob_result {
-// 				key = append(key, alice_message)
-// 			}
-// 		}
-// 	}
-// 	fmt.Printf("Took %d rounds to generate a %d-bit key.\n", round, n_bit)
-
-// 	return key
-// }
-
-func ApplyOneTimePad(message []int, key []int) []int {
-	encrypted_message := make([]int, len(message))
-	for i := 0; i < len(message); i++ {
-		encrypted_message[i] = message[i] ^ key[i]
+				key_index = 0
+				if i == count {
+					// rest_key := int64(len(key) - rest_message + 1)
+					// n, err := rand.Int(rand.Reader, big.NewInt(rest_key))
+					// if err != nil {
+					// 	log.Println(err)
+					// }
+					// key_index := n.Int64()
+					// for j := message_index; j < len(message); j++{
+					// 	encrypted_message[j] = message[j] ^ key[key_index]
+					// 	key_index++
+					// }
+					key_index = 0
+					for j := message_index; j < len(message); j++ {
+						encrypted_message[j] = message[j] ^ key[key_index]
+						key_index++
+					}
+				} else {
+					k := message_index
+					for j := message_index; j < k + len(key); j++ {
+						encrypted_message[j] = message[j] ^ key[key_index]
+						key_index++
+						message_index++
+					}
+					rest_message -= len(key)
+				}
+			}
+			return encrypted_message, n
+		} else {
+			fmt.Println("aaaaaa")
+			for i := 0; i < len(message); i++ {
+				encrypted_message[i] = message[i] ^ key[i]
+			}
+			return encrypted_message, 0
+		}
+	} else {
+		decrypted_message := make([]int, len(message), len(message))
+		if len(message) > len(key) {
+			message_index := 0
+			count := len(message) / len(key)
+			for i := 0; i < count+1; i++ {
+				key_index := 0
+				if i == count {
+					index = 0
+					for j := message_index; j < len(message); j++ {
+						decrypted_message[j] = message[j] ^ key[index]
+						index++
+					}
+				} else {
+					k := message_index
+					for j := message_index; j < k + len(key); j++ {
+						decrypted_message[j] = message[j] ^ key[key_index]
+						key_index++
+						message_index++
+					}
+				}
+			}
+		} else {
+			fmt.Println("dddddd")
+			for j := 0; j < len(message); j++ {
+				decrypted_message[j] = message[j] ^ key[j]
+			}
+		}
+		return decrypted_message, 0
 	}
-	return encrypted_message
 }

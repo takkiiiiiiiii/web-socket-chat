@@ -1,8 +1,11 @@
 package qkd
 
 import (
+	// "log"
 	"strconv"
 	"strings"
+	// "crypto/rand"
+	// "math/big"
 )
 
 func SampleRamdomBit(device QuantumDevice) int {
@@ -82,38 +85,62 @@ func SendSingleBitWithBB84(alice_device QuantumDevice, bob_device QuantumDevice)
 	return info
 }
 
-// func simulateBB84(n_bit int) []int {
-// 	var alice_device QuantumDevice
-// 	var bob_device QuantumDevice
-
-// 	var key []int
-// 	round := 0
-// 	for {
-// 		if len(key) >= n_bit {
-// 			break
-// 		}
-// 		round += 1
-// 		result := sendSingleBitWithBB84(alice_device, bob_device)
-// 		alice_message := result[0]
-// 		alice_basis := result[1]
-// 		bob_basis := result[2]
-// 		bob_result := result[3]
-
-// 		if alice_basis == bob_basis {
-// 			if alice_message == bob_result {
-// 				key = append(key, alice_message)
-// 			}
-// 		}
-// 	}
-// 	fmt.Printf("Took %d rounds to generate a %d-bit key.\n", round, n_bit)
-
-// 	return key
-// }
-
-func ApplyOneTimePad(message []int, key []int) []int {
-	encrypted_message := make([]int, len(message))
-	for i := 0; i < len(message); i++ {
-		encrypted_message[i] = message[i] ^ key[i]
+func ApplyOneTimePad(message []int, key []int, env int) []int {
+	var message_index int
+	if env == 1 {
+		encrypted_message := make([]int, len(message))
+		message_index = 0
+		if len(message) > len(key) {
+			count := len(message) / len(key)
+			over := len(message) % len(key)
+			for i := 0; i < count+1; i++ {
+				if i != count {
+					for j := 0; j < len(key); j++ {
+						encrypted_message[message_index] = message[message_index] ^ key[j]
+						message_index++
+					}
+				} else {
+					if over != 0 {
+						for j := 0; j < over; j++ {
+							encrypted_message[message_index] = message[message_index] ^ key[j]
+							message_index++
+						}
+						break
+					}
+				} 
+			}
+		} else {
+			for i := 0; i < len(message); i++ {
+				encrypted_message[i] = message[i] ^ key[i]
+			}
+		}
+		return encrypted_message
+	} else {
+		decrypted_message := make([]int, len(message)) 
+		message_index = 0
+		if len(message) > len(key) {
+			count := len(message) / len(key)
+			over := len(message) % len(key)
+			for i := 0; i < count+1; i++ {
+				if i != count {
+					for j := 0; j < len(key); j++ {
+						decrypted_message[message_index] = message[message_index] ^ key[j]
+						message_index++
+					}
+				} else {
+					if over != 0 {
+						for j := 0; j < over; j++ {
+							decrypted_message[message_index] = message[message_index] ^ key[j]
+							message_index++
+						}
+					}
+				}
+			}
+		} else {
+			for i := 0; i < len(message); i++ {
+				decrypted_message[i] = message[i] ^ key[i]
+			}
+		}
+		return decrypted_message
 	}
-	return encrypted_message
 }

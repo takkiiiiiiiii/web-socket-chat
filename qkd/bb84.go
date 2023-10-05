@@ -46,7 +46,6 @@ func ConvertToHex(bits []int) string {
 
 	binInt, _ := strconv.ParseInt(binStr, 2, 64)
 	hexStr := strconv.FormatInt(binInt, 16)
-
 	return hexStr
 }
 

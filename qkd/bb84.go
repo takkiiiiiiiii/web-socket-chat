@@ -1,12 +1,14 @@
 package qkd
 
 import (
-	// "log"
+	"fmt"
+	"log"
 	"strconv"
 	"strings"
-	// "crypto/rand"
-	// "math/big"
+	"crypto/rand"
+	"math/big"
 )
+
 
 func SampleRamdomBit(device QuantumDevice) int {
 	q := device.using_qubit()
@@ -46,7 +48,6 @@ func ConvertToHex(bits []int) string {
 
 	binInt, _ := strconv.ParseInt(binStr, 2, 64)
 	hexStr := strconv.FormatInt(binInt, 16)
-
 	return hexStr
 }
 
@@ -85,62 +86,71 @@ func SendSingleBitWithBB84(alice_device QuantumDevice, bob_device QuantumDevice)
 	return info
 }
 
-func ApplyOneTimePad(message []int, key []int, env int) []int {
-	var message_index int
-	if env == 1 {
+func ApplyOneTimePad(message []int, key []int, index int64) ([]int, int64) {
+	var random_index int64
+	var diff int
+	message_index := 0
+	if index == -1 {
+		// Encryption
 		encrypted_message := make([]int, len(message))
-		message_index = 0
+		// message_index = 0
+		fmt.Println(len(message))
 		if len(message) > len(key) {
 			count := len(message) / len(key)
-			over := len(message) % len(key)
+			var linked_key []int
+			// over := len(message) % len(key)
 			for i := 0; i < count+1; i++ {
-				if i != count {
-					for j := 0; j < len(key); j++ {
-						encrypted_message[message_index] = message[message_index] ^ key[j]
-						message_index++
-					}
-				} else {
-					if over != 0 {
-						for j := 0; j < over; j++ {
-							encrypted_message[message_index] = message[message_index] ^ key[j]
-							message_index++
-						}
-						break
-					}
-				} 
+				linked_key = append(linked_key, key...)
 			}
-		} else {
+			diff := len(linked_key) - len(message)
+			n, err := rand.Int(rand.Reader, big.NewInt(int64(diff)))
+			if err != nil {
+				log.Println("err : ", err)
+			}
+			random_index = n.Int64()
+			for j := random_index; j < random_index + int64(len(message)); j++ {
+				encrypted_message[message_index] = message[message_index] ^ linked_key[j]
+				message_index++
+			}
+		} else if len(message) == len(key) {
+			random_index = 0
 			for i := 0; i < len(message); i++ {
 				encrypted_message[i] = message[i] ^ key[i]
 			}
+		} else {
+			diff = len(key) - len(message)
+			n, err := rand.Int(rand.Reader, big.NewInt(int64(diff)))
+			if err != nil {
+				log.Println("err : ", err)
+			}
+			random_index = n.Int64()
+			for i := random_index; i < random_index + int64(len(message)); i++ {
+				encrypted_message[message_index] = message[message_index] ^ key[i]
+				message_index++
+			}
 		}
-		return encrypted_message
+		return encrypted_message, random_index
 	} else {
+		// Decryption 
 		decrypted_message := make([]int, len(message)) 
-		message_index = 0
+		// message_index = 0
 		if len(message) > len(key) {
 			count := len(message) / len(key)
-			over := len(message) % len(key)
+			var linked_key []int
+
 			for i := 0; i < count+1; i++ {
-				if i != count {
-					for j := 0; j < len(key); j++ {
-						decrypted_message[message_index] = message[message_index] ^ key[j]
-						message_index++
-					}
-				} else {
-					if over != 0 {
-						for j := 0; j < over; j++ {
-							decrypted_message[message_index] = message[message_index] ^ key[j]
-							message_index++
-						}
-					}
-				}
+				linked_key = append(linked_key, key...)
+			}
+			for j := index; j < index + int64(len(message)); j++ {
+				decrypted_message[message_index] = message[message_index] ^ linked_key[j]
+				message_index++
 			}
 		} else {
-			for i := 0; i < len(message); i++ {
-				decrypted_message[i] = message[i] ^ key[i]
+			for i := index; i < index + int64(len(message)); i++ {
+				decrypted_message[message_index] = message[message_index] ^ key[i]
+				message_index++
 			}
 		}
-		return decrypted_message
+		return decrypted_message, index
 	}
 }

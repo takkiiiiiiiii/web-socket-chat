@@ -38,15 +38,14 @@ func (c *client) read() {
 			msg.When = time.Now().Format(time.DateTime)
 			msg.Name = c.userData["name"].(string)
 			msg.AvatarURL, _ = c.room.avatar.GetAvatarURL(c)
-			message_bit := generate_message_bit(msg.Message)
-			msg.MessageBit = message_bit
+			msg.MessageBit = generate_message_bit(msg.Message)
 			fmt.Println(c.userData["name"].(string) + "'s key :" , c.shareKey)
-			if len(message_bit) < len(c.shareKey) {
-				padded_message_bit = generate_padded_message_bit(message_bit, len(c.shareKey))	// 鍵の長さ以下の場合、メッセージの長さを鍵と同じ長さにする
+			if len(msg.MessageBit) < len(c.shareKey) {
+				padded_message_bit = generate_padded_message_bit(msg.MessageBit, len(c.shareKey))	// 鍵の長さ以下の場合、メッセージの長さを鍵と同じ長さにする
 				msg.PaddedMessageBit = padded_message_bit // パディングしたビット値（スライス）
-				msg.EncryptedMessage = qkd.ApplyOneTimePad(padded_message_bit, c.shareKey, 1)
+				msg.EncryptedMessage, msg.RamdomIndex = qkd.ApplyOneTimePad(padded_message_bit, c.shareKey, -1)
 			} else {
-				msg.EncryptedMessage = qkd.ApplyOneTimePad(message_bit, c.shareKey, 1)
+				msg.EncryptedMessage, msg.RamdomIndex = qkd.ApplyOneTimePad(msg.MessageBit, c.shareKey, -1)
 			}
 			fmt.Println("encrepted_message :" , msg.EncryptedMessage)
 			fmt.Println("sending message...")
@@ -61,14 +60,14 @@ func (c *client) read() {
 
 func (c *client) write() {
 	for msg := range c.send {
-		decrypted_message_bit := qkd.ApplyOneTimePad(msg.EncryptedMessage, c.shareKey, 0)
+		decrypted_message_bit, _ := qkd.ApplyOneTimePad(msg.EncryptedMessage, c.shareKey, msg.RamdomIndex)
 		if len(msg.MessageBit) < len(c.shareKey) {
 			padded_len := len(msg.PaddedMessageBit) - len(msg.MessageBit)
 			decrypted_message := decryption_message_bit(decrypted_message_bit[padded_len:])
-			fmt.Println(c.userData["name"].(string) + " " + decrypted_message + "\n")
+			fmt.Println(c.userData["name"].(string) + " " + ": " + decrypted_message + "\n")
 		} else {
 			decrypted_message := decryption_message_bit(decrypted_message_bit)
-			fmt.Println(c.userData["name"].(string) + " " + decrypted_message + "\n")
+			fmt.Println(c.userData["name"].(string) + " " + ": " +  decrypted_message + "\n")
 		}
 		if err := c.socket.WriteJSON(msg); err != nil {
 			break

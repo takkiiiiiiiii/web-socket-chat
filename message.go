@@ -17,7 +17,7 @@ type message struct {
 	MessageBit []int
 	PaddedMessageBit []int
 	EncryptedMessage []int
-	RamdomIndex int
+	RamdomIndex int64
 }
 
 func generate_message_bit(message string) []int{

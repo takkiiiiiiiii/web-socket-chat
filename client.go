@@ -60,15 +60,17 @@ func (c *client) read() {
 
 func (c *client) write() {
 	for msg := range c.send {
+		var decrypted_message string
 		decrypted_message_bit, _ := qkd.ApplyOneTimePad(msg.EncryptedMessage, c.shareKey, msg.RamdomIndex)
 		if len(msg.MessageBit) < len(c.shareKey) {
 			padded_len := len(msg.PaddedMessageBit) - len(msg.MessageBit)
-			decrypted_message := decryption_message_bit(decrypted_message_bit[padded_len:])
+			decrypted_message = decryption_message_bit(decrypted_message_bit[padded_len:])
 			fmt.Println(c.userData["name"].(string) + " " + ": " + decrypted_message + "\n")
 		} else {
-			decrypted_message := decryption_message_bit(decrypted_message_bit)
+			decrypted_message = decryption_message_bit(decrypted_message_bit)
 			fmt.Println(c.userData["name"].(string) + " " + ": " +  decrypted_message + "\n")
 		}
+		msg.DecryptedMessage = decrypted_message
 		if err := c.socket.WriteJSON(msg); err != nil {
 			break
 		}

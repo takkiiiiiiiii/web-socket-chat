@@ -17,6 +17,7 @@ type message struct {
 	MessageBit []int
 	PaddedMessageBit []int
 	EncryptedMessage []int
+	DecryptedMessage string
 	RamdomIndex int64
 }
 

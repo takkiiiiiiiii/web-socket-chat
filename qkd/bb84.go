@@ -1,7 +1,6 @@
 package qkd
 
 import (
-	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -94,7 +93,6 @@ func ApplyOneTimePad(message []int, key []int, index int64) ([]int, int64) {
 		// Encryption
 		encrypted_message := make([]int, len(message))
 		// message_index = 0
-		fmt.Println(len(message))
 		if len(message) > len(key) {
 			count := len(message) / len(key)
 			var linked_key []int

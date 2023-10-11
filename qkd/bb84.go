@@ -8,6 +8,9 @@ import (
 	"math/big"
 )
 
+var QuantumChannel []Qubit
+var ClassicalChannel []int
+
 
 func SampleRamdomBit(device QuantumDevice) int {
 	q := device.using_qubit()

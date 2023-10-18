@@ -144,7 +144,7 @@ func ApplyOneTimePad(message []int, key []int, index int64) ([]int, int64) {
 				message_index++
 			}
 		} else {
-			for i := index+1; i < index + int64(len(message)); i++ {
+			for i := index; i < index + int64(len(message)); i++ {
 				decrypted_message[message_index] = message[message_index] ^ key[i]
 				message_index++
 			}
